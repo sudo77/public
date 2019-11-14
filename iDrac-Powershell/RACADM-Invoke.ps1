@@ -19,4 +19,4 @@ $ilo = "rzserver.test.com"
 & $racadmexe -r $ilo -u $racuser -p $racpass config -g cfgEmailAlert -o cfgEmailAlertEnable -i 1 1
 
 
-
+# many other things, but the syntax is correct
