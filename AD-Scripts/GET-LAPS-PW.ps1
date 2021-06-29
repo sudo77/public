@@ -1,2 +1,2 @@
-﻿$pw = get-adcomputer mycomputername -Properties * | select @{Label="Name";Expression={$_.name}}, @{Label="OS";Expression={$_.operatingsystem}}, @{Label="Distinguished name";Expression={$_.'distinguishedname'}}, @{Label="Password";Expression={$_.'ms-Mcs-AdmPwd'}} | select Password
+﻿$pw = get-adcomputer vmtest01 -Properties * | select @{Label="Name";Expression={$_.name}}, @{Label="OS";Expression={$_.operatingsystem}}, @{Label="Distinguished name";Expression={$_.'distinguishedname'}}, @{Label="Password";Expression={$_.'ms-Mcs-AdmPwd'}} | select Password
 $pw
