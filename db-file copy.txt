@@ -1,18 +1,3 @@
-mod from vm
+30.06
 
-mod from lapie132132123213123
-231
-
-
-s
-s
-s
-db-filecopyf
-fromsd
-s
-a
-s
-db-filecopyd
-
-
-folder
+test
