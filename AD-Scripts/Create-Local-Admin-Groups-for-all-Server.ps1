@@ -1,8 +1,8 @@
 ﻿#Create AD Group for each Server and ad the Group to each Server as local admin Group
 # Sudo77
 # 03.12.2019
-$ou = [ADSI]"LDAP://OU=_Test,OU=memberserver,OU=X-ADM,DC=root,DC=local"  ## OU for ComputerAccount
-$ou1 = [ADSI]"LDAP://OU=Server,OU=groups,OU=X-ADM,DC=root,DC=local"      ## OU for AD Groups
+$ou = [ADSI]"LDAP://OU=_Test,OU=memberserver,OU=test,DC=test,DC=local"  ## OU for ComputerAccount
+$ou1 = [ADSI]"LDAP://OU=Server,OU=groups,OU=test,DC=test,DC=local"      ## OU for AD Groups
 $groupexists = 0
 $groupadded = 0
 
@@ -14,7 +14,7 @@ foreach ($child in $ou.psbase.Children ) {
     Write-Host "GroupName: $($groupname)"
 		$groupdescription	= "Local Administrator Group for " + $name
 			
-    If (![adsi]::Exists("LDAP://CN=$groupname,OU=Server,OU=groups,OU=X-ADM,DC=root,DC=local")) {
+    If (![adsi]::Exists("LDAP://CN=$groupname,OU=Server,OU=groups,OU=test,DC=test,DC=local")) {
       $objGroup = $ou1.Create("group", "CN=" + $groupname)
 			$objGroup.psbase.InvokeSet("groupType", -2147483648 + 2)
 			$objGroup.Put("sAMAccountName", $groupname )
@@ -39,7 +39,7 @@ foreach ($child in $ou.psbase.Children ) {
 		$groupname2 = "LOC-" + $name + "-ADM"
     Write-Host "GroupName: $($groupname)"
 		Write-Host "ADing local Admin Group to Server" -ForegroundColor Green
-([ADSI]"WinNT://$name/Administrators,group").Add("WinNT://root.local/$groupName2")
+([ADSI]"WinNT://$name/Administrators,group").Add("WinNT://test.local/$groupName2")
 sleep -Seconds 5
 
 }
