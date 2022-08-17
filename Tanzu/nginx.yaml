@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx4
+spec:
+  selector:
+    matchLabels:
+      app: nginx4
+  replicas: 3 # tells deployment to run 2 pods matching the template
+  template:
+    metadata:
+      labels:
+        app: nginx4
+    spec:
+      containers:
+      - name: nginx
+        image: 172.31.33.16/snt/nginx:v1
+        ports:
+        - containerPort: 80
+      imagePullSecrets:
+      - name: snt-default-image-pull-secret
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: nginx-service4
+spec:
+  ports:
+    - name: http
+      port: 80
+      nodePort: 30062
+  selector:
+    app: nginx4
+  type: LoadBalancer
+  loadBalancerIP: 172.31.33.44
+  #externalIPs:
+  #- 172.31.33.40     
+  

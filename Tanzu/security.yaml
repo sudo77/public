@@ -1,0 +1,21 @@
+#kubectl create clusterrolebinding default-tkg-admin-privileged-binding --clusterrole=psp:vmware-system-privileged --group=system:authenticated
+# kubectl apply -f .\security.yaml --namespace kubeapps
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata: 
+  annotations: 
+    gardener.cloud/description: |
+        
+        Allow all authenticated users to use the privileged PSP.
+        
+        The subject field is configured via .spec.kubernetes.allowPrivilegedContainers flag on the Shoot resource.
+  name: "gardener.cloud:psp:privileged"
+roleRef: 
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: "psp:vmware-system-privileged"
+subjects: 
+  - 
+    apiGroup: rbac.authorization.k8s.io
+    kind: Group
+    name: "system:authenticated"
