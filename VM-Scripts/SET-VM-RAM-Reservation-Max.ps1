@@ -8,8 +8,8 @@
 #Body
 #Connect-VIServer -Server $server -Username $username -Password $password
 $error.Clear()
-$path = "D:\00-Scripts\05-Reporting\88-VMware_Reporting\Ram-Settings"
-$patcharchive = "D:\00-Scripts\05-Reporting\88-VMware_Reporting\Ram-Settings\Archive"
+$path = "D:\00-Scripts\Ram-Settings"
+$patcharchive = "D:\00-Scripts\Archive"
 
 $CurrentDate = Get-Date
 $CurrentDate = $CurrentDate.ToString('dd-MM-yyyy')

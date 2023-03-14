@@ -1,5 +1,5 @@
 ﻿
- $cluster = "C03-DMZ"
+ $cluster = "CL"
 
  
 $vmhosts= get-cluster $cluster | Get-VMHost 

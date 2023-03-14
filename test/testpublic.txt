@@ -1,7 +1,0 @@
-ein test
-
-git config --global http.proxy http://username:password@proxy.workplace.com:8080
-
-
-
-asdf
