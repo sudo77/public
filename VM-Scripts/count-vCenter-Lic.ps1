@@ -47,4 +47,4 @@ $result = foreach ($licenseManager in (Get-View LicenseManager)) #-Server $vCent
 } #foreach ($licenseManager in (Get-View LicenseManager)) #-Server $vCenter.Name
 
 
-$result | Export-Excel -Path C:\00-Scripts\mucvcap001-lic-$currentDate.xlsx
+$result | Export-Excel -Path C:\00-Scripts\mup001-lic-$currentDate.xlsx
