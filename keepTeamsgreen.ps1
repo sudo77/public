@@ -16,6 +16,6 @@ while ($true) {
     [MouseJiggler]::Jiggle()
 
     # Alle 5 Minuten ausführen
-    Write-Host "keep moving" -foregroundcolor green
+    Write-Host "keep moving..." -foregroundcolor green
     Start-Sleep -Seconds 120
 }
