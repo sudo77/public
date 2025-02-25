@@ -14,11 +14,11 @@ $jetzt = Get-Date
 
 # Falls die CSV noch nicht existiert, lege sie mit Header an.
 if (-not (Test-Path $csvPath)) {
-    "Start,Ende,SummeTag,SummeWoche" | Out-File -FilePath $csvPath -Encoding UTF8
+    "Start_____Zeitpunkt;End_____Zeitpunkt;SummeTag;SummeWoche" | Out-File -FilePath $csvPath -Encoding UTF8
 }
 
 # CSV einlesen
-$data = Import-Csv -Path $csvPath -Delimiter ','
+$data = Import-Csv -Path $csvPath -Delimiter ';'
 
 # Funktion zur Formatierung der Zeitspanne
 function Format-Dauer($timespan) {
@@ -32,18 +32,25 @@ function Get-IsoWeekNumber([datetime]$date) {
 }
 
 # Sucht nach einem offenen Eintrag (ohne Ende) für heute
-$offenerEintrag = $data | Where-Object { $_.Start -like "$heute*" -and ([string]::IsNullOrWhiteSpace($_.Ende)) }
+$offenerEintrag = $data | Where-Object { $_.Start_____Zeitpunkt -like "$heute*" -and ([string]::IsNullOrWhiteSpace($_.End_____Zeitpunkt)) }
 
 if (-not $offenerEintrag) {
     # Neuer Eintrag: Session starten
     $startZeit = $jetzt.ToString("dd.MM.yyyy HH:mm:ss")
-    $zeile = "$startZeit,,,"
-    Add-Content -Path $csvPath -Value $zeile
-    Write-Output "Session gestartet: $zeile"
+    $newEntry = [PSCustomObject]@{
+        Start_____Zeitpunkt = $startZeit
+        End_____Zeitpunkt   = ""
+        SummeTag            = ""
+        SummeWoche          = ""
+    }
+
+    # Append the new entry to the CSV file
+    $newEntry | Export-Csv -Path $csvPath -Append -NoTypeInformation -Delimiter ';'
+    Write-Output "Session gestartet: $startZeit"
 }
 else {
     # Bestehender Eintrag für heute schließen
-    $startString = $offenerEintrag.Start  # z.B. "23.02.2025 08:30:15"
+    $startString = $offenerEintrag.Start_____Zeitpunkt  # z.B. "23.02.2025 08:30:15"
     try {
         $startDateTime = [datetime]::ParseExact($startString, "dd.MM.yyyy HH:mm:ss", $null)
     }
@@ -56,12 +63,12 @@ else {
 
     # Subtrahiere die Pause von der Gesamtdauer
     $differenz = $differenz - [TimeSpan]::FromMinutes($pause)
-    $summeTag = Format-Dauer $differenz
+    $summeTag = Format-Dauer($differenz)
 
     # Aktualisieren des Eintrags: Endzeit und SummeTag eintragen
     $data | ForEach-Object {
-        if ($_.Start -eq $startString -and ([string]::IsNullOrWhiteSpace($_.Ende))) {
-            $_.Ende = $endeZeit.ToString("dd.MM.yyyy HH:mm:ss")
+        if ($_.Start_____Zeitpunkt -eq $startString -and ([string]::IsNullOrWhiteSpace($_.End_____Zeitpunkt))) {
+            $_.End_____Zeitpunkt = $endeZeit.ToString("dd.MM.yyyy HH:mm:ss")
             $_.SummeTag = $summeTag
         }
     }
@@ -69,9 +76,9 @@ else {
     # Um SummeWoche zu berechnen, gruppieren wir alle Einträge nach Woche und Jahr
     # (Wir parsen dazu die Start-Zeit, sofern vorhanden und gültig)
     foreach ($entry in $data) {
-        if ($entry.Start -ne $null -and $entry.Start -match "\d{2}\.\d{2}\.\d{4}") {
-            $entryDate = [datetime]::ParseExact($entry.Start.Substring(0,10), "dd.MM.yyyy", $null)
-            $entry | Add-Member -NotePropertyName IsoWeek -NotePropertyValue (Get-IsoWeekNumber $entryDate) -Force
+        if ($entry.Start_____Zeitpunkt -ne $null -and $entry.Start_____Zeitpunkt -match "\d{2}\.\d{2}\.\d{4}") {
+            $entryDate = [datetime]::ParseExact($entry.Start_____Zeitpunkt.Substring(0,10), "dd.MM.yyyy", $null)
+            $entry | Add-Member -NotePropertyName IsoWeek -NotePropertyValue (Get-IsoWeekNumber($entryDate)) -Force
             $entry | Add-Member -NotePropertyName Year -NotePropertyValue $entryDate.Year -Force
         }
         else {
@@ -98,7 +105,7 @@ else {
         }
         # Gesamtzeit als TimeSpan
         $totalTimeSpan = [TimeSpan]::FromSeconds($totalSeconds)
-        $summeWocheStr = Format-Dauer $totalTimeSpan
+        $summeWocheStr = Format-Dauer($totalTimeSpan)
 
         # Aktualisiere SummeWoche für alle Einträge der Gruppe
         foreach ($item in $grp.Group) {
@@ -107,7 +114,7 @@ else {
     }
 
     # Schreibe alle Daten zurück in die CSV (ohne zusätzlichen Header)
-    $data | Select-Object Start,Ende,SummeTag,SummeWoche | Export-Csv -Path $csvPath -NoTypeInformation -Delimiter ','
+    $data | Select-Object Start_____Zeitpunkt,End_____Zeitpunkt,SummeTag,SummeWoche | Export-Csv -Path $csvPath -NoTypeInformation -Delimiter ';'
 
     Write-Output "Session beendet: Ende = $($endeZeit.ToString("dd.MM.yyyy HH:mm:ss")); SummeTag = $summeTag"
     Write-Output "Wöchentliche Summe aktualisiert."
